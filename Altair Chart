@@ -1,9 +1,21 @@
-df['day_of_the_week'] = df["time_start"].dt.day
+def plot_prices(df: pd.DataFrame) -> alt.Chart:
+    """Plot energy prices over time:
+        x-axis should be time_start
+        y-axis should be price in NOK
+        each location should get its own line
+
+    arguments:
+        df (pd.DataFrame): pandas DataFrame containing desired data we want to display
+    return:
+        chart (alt.Chart): chart visualizing the electricity prices for each location over given time period
+    """
+
+
+    df['day_of_the_week'] = df["time_start"].dt.day
     df['week_number'] = df["time_start"].dt.isocalendar().week
 
     chart = alt.Chart(df).mark_line().transform_window(
         previous_hour = "lag(NOK_per_kWh)",
-
 
     ).transform_calculate(
         hourly_trend = '(datum.NOK_per_kWh - datum.previous_hour) / datum.previous_hour',
