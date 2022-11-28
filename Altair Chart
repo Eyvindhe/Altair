@@ -1,0 +1,23 @@
+df['day_of_the_week'] = df["time_start"].dt.day
+    df['week_number'] = df["time_start"].dt.isocalendar().week
+
+    chart = alt.Chart(df).mark_line().transform_window(
+        previous_hour = "lag(NOK_per_kWh)",
+
+
+    ).transform_calculate(
+        hourly_trend = '(datum.NOK_per_kWh - datum.previous_hour) / datum.previous_hour',
+        
+    ).encode(
+        x = 'time_start:T',
+        y = 'NOK_per_kWh:Q',
+        color = 'location',
+        tooltip=["location", alt.Tooltip('hourly_trend:Q', format='.1%')]
+    ).properties(
+        title = "Electricity prices"
+    ).interactive()
+
+    plot_daily_prices(df, chart)
+    df.to_csv('test.csv', sep='\t', encoding='utf-8')
+
+    return chart.mark_line() 
